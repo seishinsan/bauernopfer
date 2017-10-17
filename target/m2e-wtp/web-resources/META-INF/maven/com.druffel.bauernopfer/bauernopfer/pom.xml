@@ -63,7 +63,7 @@
 			<version>2.0.2-beta</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		  <dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-api</artifactId>
 			<version>2.2.15</version>
@@ -77,8 +77,8 @@
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet</artifactId>
 			<version>2.2.14.Final</version>
-		</dependency>
-	</dependencies>
+		</dependency> 
+	</dependencies> 
 
 	<build>
 		<plugins>
@@ -106,6 +106,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+	</build> 
 
 </project>

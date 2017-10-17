@@ -32,9 +32,9 @@ import com.druffel.bauernopfer.util.Position;
  *
  * @author AmonDruffel, &copy; 2017 Sophos Technology GmbH
  */
-@Named("home")
+@Named("challengeThree")
 @ApplicationScoped
-public class HomeManagedBean
+public class ChallengeThreeManagedBean
 {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
@@ -49,9 +49,15 @@ public class HomeManagedBean
 
     private boolean autoplay;
 
+    private int amountOfPawns;
+
     @PostConstruct
     public void init()
     {
+        if (amountOfPawns == 0)
+        {
+            amountOfPawns = 8;
+        }
         setAutoplay(false);
         currentPlayer = COLOR.WHITE;
         occupiedFields = new ArrayList<>();
@@ -67,16 +73,21 @@ public class HomeManagedBean
         placeFigures();
     }
 
-    public void restart()
+    public void apply()
     {
         init();
     }
 
     public void autoplayToggle()
     {
-        autoplay = (autoplay) ? false:true;
+        autoplay = (autoplay) ? false : true;
     }
-    
+
+    public void restart()
+    {
+        init();
+    }
+
     protected void placeFigures()
     {
         logger.info("Initializing Board");
@@ -90,14 +101,33 @@ public class HomeManagedBean
     protected void placeWhitePawns()
     {
         logger.info("Placing white pawns");
-        int row = new Random().nextInt(8);
-        for (int i = 0; i < 8; i++)
+        int row = 4;
+        for (int i = 0; i < amountOfPawns; i++)
         {
-            Pawn pawn = new Pawn(PIECE_ID.PAWN, COLOR.WHITE, i);
-            Position pos = new Position(i, row);
-            rows.get(pos.getY()).getSquares().get(pos.getX()).setPiece(pawn);
-            occupiedFields.add(rows.get(pos.getY()).getSquares().get(pos.getX()));
-            logger.info("Placed pawn at: X:" + pos.getX() + " Y:" + pos.getY());
+            if (i < 8)
+            {
+                Pawn pawn = new Pawn(PIECE_ID.PAWN, COLOR.WHITE, i);
+                Position pos = new Position(i, row);
+                rows.get(pos.getY()).getSquares().get(pos.getX()).setPiece(pawn);
+                occupiedFields.add(rows.get(pos.getY()).getSquares().get(pos.getX()));
+                logger.info("Placed pawn at: X:" + pos.getX() + " Y:" + pos.getY());
+            }
+            else
+            {
+                row = new Random().nextInt(8);
+                Position pos = new Position(new Random().nextInt(8), row);
+                while (Movement.isFieldOccupied(pos, rows))
+                {
+                    pos = new Position(new Random().nextInt(8), row);
+                }
+
+                Pawn pawn = new Pawn(PIECE_ID.PAWN, COLOR.WHITE, i);
+                rows.get(pos.getY()).getSquares().get(pos.getX()).setPiece(pawn);
+                occupiedFields.add(rows.get(pos.getY()).getSquares().get(pos.getX()));
+                logger.info("Placed pawn at: X:" + pos.getX() + " Y:" + pos.getY());
+
+            }
+
         }
     }
 
@@ -110,7 +140,7 @@ public class HomeManagedBean
         Rook rook = new Rook(PIECE_ID.ROOK, COLOR.BLACK);
 
         Position newPosition = new Position(new Random().nextInt(8), new Random().nextInt(8));
-        while (Movement.isFieldOccupied(newPosition, rows))
+        while (Movement.isFieldOccupied(newPosition, rows) || Movement.fieldNextToWhite(newPosition, rows))
         {
             newPosition = new Position(new Random().nextInt(8), new Random().nextInt(8));
         }
@@ -154,6 +184,130 @@ public class HomeManagedBean
         return getSquare(row, square).getPiece();
     }
 
+    protected Position findEmptySpot(Position currentPos)
+    {
+        List<Position> emptySpots = new ArrayList<>();
+
+        for (int i = currentPos.getX() + 1; i < 8; i++)
+        {
+            if (isSpotEmpty(new Position(i, currentPos.getY())))
+            {
+                emptySpots.add(new Position(i, currentPos.getY()));
+            }
+            else if (Movement.isFieldOccupiedByWhite(new Position(i, currentPos.getY()), rows))
+            {
+                break;
+            }
+        }
+
+        for (int i = currentPos.getX() - 1; i > -1; i--)
+        {
+            if (isSpotEmpty(new Position(i, currentPos.getY())))
+            {
+                emptySpots.add(new Position(i, currentPos.getY()));
+            }
+            else if (Movement.isFieldOccupiedByWhite(new Position(i, currentPos.getY()), rows))
+            {
+                break;
+            }
+        }
+
+        for (int i = currentPos.getY() + 1; i < 8; i++)
+        {
+            if (isSpotEmpty(new Position(currentPos.getX(), i)))
+            {
+                emptySpots.add(new Position(currentPos.getX(), i));
+            }
+            else if (Movement.isFieldOccupiedByWhite(new Position(currentPos.getX(), i), rows))
+            {
+                break;
+            }
+        }
+
+        for (int i = currentPos.getY() - 1; i > -1; i--)
+        {
+            if (isSpotEmpty(new Position(currentPos.getX(), i)))
+            {
+                emptySpots.add(new Position(currentPos.getX(), i));
+            }
+            else if (Movement.isFieldOccupiedByWhite(new Position(currentPos.getX(), i), rows))
+            {
+                break;
+            }
+        }
+
+        return (emptySpots.size() == 0)
+                ? getPiece(BoardUtil.getBlackFigure(occupiedFields).getY(), BoardUtil.getBlackFigure(occupiedFields).getX())
+                        .setOptimalMovement(getWhiteFigure(occupiedFields), BoardUtil.getBlackFigure(occupiedFields), rows)
+                        .move(BoardUtil.getBlackFigure(occupiedFields).getY(), BoardUtil.getBlackFigure(occupiedFields).getX())
+                : emptySpots.get(new Random().nextInt(emptySpots.size()));
+    }
+
+    protected boolean isSpotEmpty(Position target)
+    {
+        boolean empty = true;
+
+        for (int i = target.getX(); i < 8; i++)
+        {
+            if (Movement.isFieldOccupiedByWhite(new Position(i, target.getY()), rows))
+            {
+                System.out.println(getPiece(target.getY(), i));
+                empty = false;
+            }
+        }
+
+        for (int i = target.getY() + 1; i < 8; i++)
+        {
+            if (Movement.isFieldOccupiedByWhite(new Position(target.getX(), i), rows))
+            {
+                empty = false;
+            }
+
+        }
+
+        for (int i = target.getY() - 1; i > -1; i--)
+        {
+            if (Movement.isFieldOccupiedByWhite(new Position(target.getX(), i), rows))
+            {
+                empty = false;
+            }
+
+        }
+
+        return empty;
+    }
+
+    public static Position getWhiteFigure(List<Square> occupiedFields)
+    {
+        Position nearestPosition = null;
+        int distance = -999;
+        for (Square square : occupiedFields)
+        {
+            if (square.getPiece().getColor() == COLOR.WHITE)
+            {
+                if (square.getRow() - BoardUtil.getBlackFigure(occupiedFields).getY() == -1
+                        || square.getRow() - BoardUtil.getBlackFigure(occupiedFields).getY() == 1
+                        || square.getIndex() - BoardUtil.getBlackFigure(occupiedFields).getX() == 1
+                        || square.getIndex() - BoardUtil.getBlackFigure(occupiedFields).getX() == -1)
+                {
+                    return new Position(square.getIndex(), square.getRow());
+                }
+
+                int tempDistance = 0 - (BoardUtil.getBlackFigure(occupiedFields).getX() - square.getIndex());
+                if (tempDistance > distance || tempDistance == 0)
+                {
+                    distance = tempDistance;
+                    nearestPosition = new Position(square.getIndex(), square.getRow());
+                    if (tempDistance == 0)
+                    {
+                        return nearestPosition;
+                    }
+                }
+            }
+        }
+        return nearestPosition;
+    }
+
     /**
      * Moves player to next position
      */
@@ -167,10 +321,8 @@ public class HomeManagedBean
             if (oldPosition != null)
             {
                 Piece piece = getPiece(oldPosition.getY(), oldPosition.getX());
-                Position newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece()
-                        .setOptimalMovement(BoardUtil.getWhiteFigure(occupiedFields, lastMovedWhite), oldPosition, rows)
-                        .move(oldPosition.getY(), oldPosition.getX());
-                while (Movement.isFieldOccupied(newPosition, rows))
+                Position newPosition = findEmptySpot(oldPosition);
+                while (Movement.isFieldOccupied(newPosition, rows) || Movement.fieldNextToWhite(newPosition, rows))
                 {
                     newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece().move(oldPosition.getY(), oldPosition.getX());
                 }
@@ -185,13 +337,13 @@ public class HomeManagedBean
         // WHITE PLAYER
         else
         {
-            Position oldPosition = BoardUtil.getWhiteFigure(occupiedFields, lastMovedWhite);
+            Position oldPosition = getWhiteFigure(occupiedFields);
             if (oldPosition != null)
             {
                 Piece piece = getPiece(oldPosition.getY(), oldPosition.getX());
                 Position newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece()
-                        .setOptimalMovementSimple(BoardUtil.getBlackFigure(occupiedFields), oldPosition, rows).move(oldPosition.getY(), oldPosition.getX());
-                while (Movement.isFieldOccupied(newPosition, rows) && Movement.cannotCapture(newPosition, rows))
+                        .setOptimalMovement(BoardUtil.getBlackFigure(occupiedFields), oldPosition, rows).move(oldPosition.getY(), oldPosition.getX());
+                while (Movement.isFieldOccupiedByWhite(newPosition, rows) && Movement.cannotCapture(newPosition, rows))
                 {
                     newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece().move(oldPosition.getY(), oldPosition.getX());
                 }
@@ -201,7 +353,7 @@ public class HomeManagedBean
                 currentPlayer = COLOR.BLACK;
                 logger.info("WHITE moved from Row:" + oldPosition.getY() + " Square:" + oldPosition.getX() + "to Row:" + newPosition.getY() + " Square:"
                         + newPosition.getX());
-                if (lastMovedWhite.size() == 8)
+                if (lastMovedWhite.size() == 7)
                 {
                     lastMovedWhite = new ArrayList<>();
                 }
@@ -209,8 +361,8 @@ public class HomeManagedBean
                 lastMovedWhite.add(p.getIndex());
             }
         }
-        
-        if(BoardUtil.isGameOver(occupiedFields))
+
+        if (BoardUtil.isGameOver(occupiedFields))
         {
             restart();
             autoplay = false;
@@ -256,6 +408,16 @@ public class HomeManagedBean
     public void setAutoplay(boolean autoplay)
     {
         this.autoplay = autoplay;
+    }
+
+    public int getAmountOfPawns()
+    {
+        return amountOfPawns;
+    }
+
+    public void setAmountOfPawns(int amountOfPawns)
+    {
+        this.amountOfPawns = amountOfPawns;
     }
 
 }

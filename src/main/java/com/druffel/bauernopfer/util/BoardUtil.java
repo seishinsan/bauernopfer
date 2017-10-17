@@ -58,4 +58,15 @@ public class BoardUtil
         return null;
     }
     
+    public static boolean isGameOver(List<Square> occupiedFields)
+    {
+        for(Square square : occupiedFields)
+        {
+            if(square.getPiece().getColor() == COLOR.BLACK)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

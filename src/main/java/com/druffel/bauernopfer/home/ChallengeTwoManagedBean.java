@@ -161,19 +161,52 @@ public class ChallengeTwoManagedBean
     protected Position findEmptySpot(Position currentPos)
     {
         List<Position> emptySpots = new ArrayList<>();
-        for (Square square : rows.get(currentPos.getY()).getSquares())
+        
+        for (int i = currentPos.getX()+1; i < 8; i++)
         {
-            if (isSpotEmpty(new Position(square.getIndex(), square.getRow())))
+            if (isSpotEmpty(new Position(i, currentPos.getY())))
             {
-                emptySpots.add(new Position(square.getIndex(), square.getRow()));
+                emptySpots.add(new Position(i, currentPos.getY()));
+            }
+            else if(Movement.isFieldOccupiedByWhite(new Position(i, currentPos.getY()), rows))
+            {
+                break;
+            }
+        }
+        
+        for (int i = currentPos.getX()-1; i > -1; i--)
+        {
+            if (isSpotEmpty(new Position(i, currentPos.getY())))
+            {
+                emptySpots.add(new Position(i, currentPos.getY()));
+            }
+            else if(Movement.isFieldOccupiedByWhite(new Position(i, currentPos.getY()), rows))
+            {
+                break;
             }
         }
 
-        for (int i = 0; i < 8; i++)
+        for (int i = currentPos.getY()+1; i < 8; i++)
         {
             if (isSpotEmpty(new Position(currentPos.getX(), i)))
             {
                 emptySpots.add(new Position(currentPos.getX(), i));
+            }
+            else if(Movement.isFieldOccupiedByWhite(new Position(currentPos.getX(), i), rows))
+            {
+                break;
+            }
+        }
+        
+        for (int i = currentPos.getY()-1; i >-1; i--)
+        {
+            if (isSpotEmpty(new Position(currentPos.getX(), i)))
+            {
+                emptySpots.add(new Position(currentPos.getX(), i));
+            }
+            else if(Movement.isFieldOccupiedByWhite(new Position(currentPos.getX(), i), rows))
+            {
+                break;
             }
         }
 
@@ -297,6 +330,12 @@ public class ChallengeTwoManagedBean
                 Pawn p = (Pawn) piece;
                 lastMovedWhite.add(p.getIndex());
             }
+        }
+        
+        if(BoardUtil.isGameOver(occupiedFields))
+        {
+            restart();
+            autoplay = false;
         }
 
     }

@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet library="css" name="normalize.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="style.css"></h:outputStylesheet>
+	<title>Bauernopfer</title>
+</h:head>
+
+<h:body>
+
+	<h:panelGroup layout="block"
+		style="display:flex;justify-content:center;align-items:center;width:100%;">
+
+
+		<h:panelGroup layout="block" id="board">
+
+			<h:panelGroup layout="block">
+				<table style="margin: 0px auto;" cellpadding="0" border="0"
+					align="center" cellspacing="0">
+					<tr style="text-align: center;">
+						<td></td>
+						<td>A</td>
+						<td>B</td>
+						<td>C</td>
+						<td>D</td>
+						<td>E</td>
+						<td>F</td>
+						<td>G</td>
+						<td>H</td>
+					</tr>
+					<ui:repeat value="#{challengeThree.rows}" var="row">
+						<tr>
+							<td>
+								<h:outputLabel value="#{row.index}" style="margin-right: 10px;" />
+							</td>
+							<ui:repeat value="#{row.squares}" var="square">
+								<td>
+									<h:graphicImage value="/resources/img/black.jpg"
+										style="width: 64px; height: 64px; display:block;"
+										rendered="#{!square.isWhite() and empty square.piece}" />
+									<h:graphicImage value="/resources/img/white.jpg"
+										style="width: 64px; height: 64px; display:block;"
+										rendered="#{square.isWhite() and empty square.piece}" />
+									<h:graphicImage value="#{square.piece.image_black}"
+										style="width: 64px; height: 64px; display:block;"
+										rendered="#{!square.isWhite() and not empty square.piece}" />
+									<h:graphicImage value="#{square.piece.image_white}"
+										style="width: 64px; height: 64px; display:block;"
+										rendered="#{square.isWhite() and not empty square.piece}" />
+								</td>
+							</ui:repeat>
+						</tr>
+					</ui:repeat>
+				</table>
+			</h:panelGroup>
+
+		</h:panelGroup>
+
+	</h:panelGroup>
+	<h:panelGroup layout="block" style="width: 100%; text-align:center;">
+		<h:form>
+			<h:inputText value="#{challengeThree.amountOfPawns}"/>
+			<h:commandButton value="Apply" action="#{challengeThree.apply()}" />
+			<h:commandButton value="Next" action="#{challengeThree.nextMove()}" />
+			<h:commandButton value="Restart" action="#{challengeThree.restart()}" />
+			<h:commandButton value="Autoplay" action="#{challengeThree.autoplayToggle()}"/>
+			<p:poll interval="1" listener="#{challengeThree.nextMove()}" update="board" rendered="#{challengeThree.autoplay}"/>
+		</h:form>
+	</h:panelGroup>
+
+</h:body>
+
+</html>
