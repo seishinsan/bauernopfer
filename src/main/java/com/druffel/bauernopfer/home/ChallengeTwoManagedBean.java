@@ -70,7 +70,7 @@ public class ChallengeTwoManagedBean
     public void autoplayToggle()
     {
         autoplay = (autoplay) ? false:true;
-    }
+    } 
     
     public void restart()
     {

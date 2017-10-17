@@ -1,9 +1,0 @@
-com\druffel\bauernopfer\game\board\piece\Pawn.class
-com\druffel\bauernopfer\util\Position.class
-com\druffel\bauernopfer\game\board\piece\Piece.class
-com\druffel\bauernopfer\game\board\piece\COLOR.class
-com\druffel\bauernopfer\game\board\Row.class
-com\druffel\bauernopfer\home\HomeManagedBean.class
-com\druffel\bauernopfer\game\board\piece\Rook.class
-com\druffel\bauernopfer\game\board\piece\PIECE_ID.class
-com\druffel\bauernopfer\game\board\Square.class
