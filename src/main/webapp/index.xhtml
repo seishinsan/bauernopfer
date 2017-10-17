@@ -69,7 +69,7 @@
 		<h:form>
 		<h:commandButton value="Next" action="#{home.nextMove()}"/>
 		<h:commandButton value="Restart" action="#{home.restart()}"/>
-		<h:commandButton value="Autoplay" action="#{home.autoplay()}"/>
+		<h:commandButton value="Autoplay" action="#{home.autoplayToggle()}"/>
 		<p:poll interval="1" listener="#{home.nextMove()}" update="board" rendered="#{home.autoplay}"/>
 	</h:form>
 	</h:panelGroup>

@@ -67,7 +67,7 @@ public class ChallengeTwoManagedBean
         placeFigures();
     }
 
-    public void autoplay()
+    public void autoplayToggle()
     {
         autoplay = (autoplay) ? false:true;
     }

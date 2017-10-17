@@ -72,7 +72,7 @@ public class HomeManagedBean
         init();
     }
 
-    public void autoplay()
+    public void autoplayToggle()
     {
         autoplay = (autoplay) ? false:true;
     }

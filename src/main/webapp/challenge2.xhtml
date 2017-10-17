@@ -69,7 +69,7 @@
 		<h:form>
 			<h:commandButton value="Next" action="#{challengeTwo.nextMove()}" />
 			<h:commandButton value="Restart" action="#{challengeTwo.restart()}" />
-			<h:commandButton value="Autoplay" action="#{challengeTwo.autoplay()}"/>
+			<h:commandButton value="Autoplay" action="#{challengeTwo.autoplayToggle()}"/>
 			<p:poll interval="1" listener="#{challengeTwo.nextMove()}" update="board" rendered="#{challengeTwo.autoplay}"/>
 		</h:form>
 	</h:panelGroup>
