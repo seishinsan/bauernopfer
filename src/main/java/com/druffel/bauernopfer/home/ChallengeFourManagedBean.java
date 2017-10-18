@@ -34,9 +34,9 @@ import com.druffel.bauernopfer.util.Position;
  *
  * @author AmonDruffel, &copy; 2017 Sophos Technology GmbH
  */
-@Named("challengeThree")
+@Named("challengeFour")
 @ApplicationScoped
-public class ChallengeThreeManagedBean
+public class ChallengeFourManagedBean
 {
 
     private final Logger logger = Logger.getLogger(getClass().getName());

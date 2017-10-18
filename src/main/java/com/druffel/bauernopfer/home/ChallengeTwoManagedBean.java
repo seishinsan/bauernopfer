@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import com.druffel.bauernopfer.game.board.Row;
@@ -255,14 +257,6 @@ public class ChallengeTwoManagedBean
         {
             if (square.getPiece().getColor() == COLOR.WHITE)
             {
-                if (square.getRow() - BoardUtil.getBlackFigure(occupiedFields).getY() == -1
-                        || square.getRow() - BoardUtil.getBlackFigure(occupiedFields).getY() == 1
-                        || square.getIndex() - BoardUtil.getBlackFigure(occupiedFields).getX() == 1
-                        || square.getIndex() - BoardUtil.getBlackFigure(occupiedFields).getX() == -1)
-                {
-                    return new Position(square.getIndex(), square.getRow());
-                }
-
                 int tempDistance = 0 - (BoardUtil.getBlackFigure(occupiedFields).getX() - square.getIndex());
                 if (tempDistance > distance || tempDistance == 0)
                 {
@@ -287,14 +281,22 @@ public class ChallengeTwoManagedBean
         // BLACK PLAYER
         if (currentPlayer == COLOR.BLACK)
         {
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("Black", "Black player is thinking."));
             Position oldPosition = BoardUtil.getBlackFigure(occupiedFields);
             if (oldPosition != null)
             {
                 Piece piece = getPiece(oldPosition.getY(), oldPosition.getX());
                 Position newPosition = findEmptySpot(oldPosition);
+                int i = 0;
                 while (Movement.isFieldOccupied(newPosition, rows) || Movement.fieldNextToWhite(newPosition, rows))
                 {
+                    i++;
                     newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece().move(oldPosition.getY(), oldPosition.getX());
+                    if(i==20)
+                    {
+                        restart();
+                        autoplay = false;
+                    }
                 }
                 removePiece(oldPosition.getY(), oldPosition.getX());
                 setNewPiecePosition(newPosition.getY(), newPosition.getX(), piece);
@@ -307,6 +309,7 @@ public class ChallengeTwoManagedBean
         // WHITE PLAYER
         else
         {
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("White", "White player is thinking."));
             Position oldPosition = getWhiteFigure(occupiedFields);
             if (oldPosition != null)
             {
@@ -336,6 +339,7 @@ public class ChallengeTwoManagedBean
         {
             restart();
             autoplay = false;
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("Game end", "Game came to an End."));
         }
 
     }

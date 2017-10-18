@@ -36,7 +36,7 @@
 						<td>G</td>
 						<td>H</td>
 					</tr>
-					<ui:repeat value="#{challengeTwo.rows}" var="row">
+					<ui:repeat value="#{challengeFour.rows}" var="row">
 						<tr>
 							<td>
 								<h:outputLabel value="#{row.index}" style="margin-right: 10px;" />
@@ -67,11 +67,21 @@
 	</h:panelGroup>
 	<h:panelGroup layout="block" style="width: 100%; text-align:center;">
 		<h:form>
-		<p:growl id="growl" showDetail="true" sticky="true" /> 
-			<h:commandButton value="Next" action="#{challengeTwo.nextMove()}" />
-			<h:commandButton value="Restart" action="#{challengeTwo.restart()}" />
-			<h:commandButton value="Autoplay" action="#{challengeTwo.autoplayToggle()}"/>
-			<p:poll interval="1" listener="#{challengeTwo.nextMove()}" update="board" rendered="#{challengeTwo.autoplay}"/>
+		<p:growl id="growl" showDetail="true" sticky="true" />  
+			<h:panelGrid columns="2" style="margin: 0px auto;">
+				<h:outputLabel value="Anzahl Bauern" />
+				<h:inputText value="#{challengeFour.amountOfPawns}" />
+				<h:outputLabel value="Anzahl Runden" />
+				<h:inputText value="#{challengeFour.amountOfRounds}" />
+				<h:commandButton value="Apply" action="#{challengeFour.apply()}" />
+				<h:commandButton value="Next" action="#{challengeFour.nextMove()}" />
+				<h:commandButton value="Restart"
+					action="#{challengeFour.restart()}" />
+				<h:commandButton value="Autoplay"
+					action="#{challengeFour.autoplayToggle()}" />
+			</h:panelGrid>
+			<p:poll interval="1" listener="#{challengeFour.nextMove()}"
+				update="board" rendered="#{challengeFour.autoplay}" />
 		</h:form>
 	</h:panelGroup>
 

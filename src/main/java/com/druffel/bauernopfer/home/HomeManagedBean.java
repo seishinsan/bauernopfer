@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import com.druffel.bauernopfer.game.board.Row;
@@ -74,9 +76,9 @@ public class HomeManagedBean
 
     public void autoplayToggle()
     {
-        autoplay = (autoplay) ? false:true;
+        autoplay = (autoplay) ? false : true;
     }
-    
+
     protected void placeFigures()
     {
         logger.info("Initializing Board");
@@ -163,6 +165,7 @@ public class HomeManagedBean
         // BLACK PLAYER
         if (currentPlayer == COLOR.BLACK)
         {
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("Black", "Black player is thinking."));
             Position oldPosition = BoardUtil.getBlackFigure(occupiedFields);
             if (oldPosition != null)
             {
@@ -170,9 +173,16 @@ public class HomeManagedBean
                 Position newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece()
                         .setOptimalMovement(BoardUtil.getWhiteFigure(occupiedFields, lastMovedWhite), oldPosition, rows)
                         .move(oldPosition.getY(), oldPosition.getX());
-                while (Movement.isFieldOccupied(newPosition, rows))
+                int i = 0;
+                while (Movement.isFieldOccupied(newPosition, rows) || Movement.fieldNextToWhite(newPosition, rows))
                 {
+                    i++;
                     newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece().move(oldPosition.getY(), oldPosition.getX());
+                    if (i == 20)
+                    {
+                        restart();
+                        autoplay = false;
+                    }
                 }
                 removePiece(oldPosition.getY(), oldPosition.getX());
                 setNewPiecePosition(newPosition.getY(), newPosition.getX(), piece);
@@ -185,6 +195,7 @@ public class HomeManagedBean
         // WHITE PLAYER
         else
         {
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("White", "White player is thinking."));
             Position oldPosition = BoardUtil.getWhiteFigure(occupiedFields, lastMovedWhite);
             if (oldPosition != null)
             {
@@ -209,11 +220,12 @@ public class HomeManagedBean
                 lastMovedWhite.add(p.getIndex());
             }
         }
-        
-        if(BoardUtil.isGameOver(occupiedFields))
+
+        if (BoardUtil.isGameOver(occupiedFields))
         {
             restart();
             autoplay = false;
+            FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("Game end", "Game came to an End."));
         }
 
     }

@@ -43,12 +43,11 @@ public class Pawn implements Piece
         {
             optimalDirection = 'e';
         }
-        else if(enemyPos.getX() < myPosition.getX())
+        else if (enemyPos.getX() < myPosition.getX())
         {
             optimalDirection = 'w';
         }
-        
-        if(Movement.isFieldOccupied(move(myPosition.getY(), myPosition.getX()), map))
+        else
         {
             if (enemyPos.getY() > myPosition.getY())
             {
@@ -59,7 +58,22 @@ public class Pawn implements Piece
                 optimalDirection = 'n';
             }
         }
-       
+
+        if (optimalDirection == 'e' || optimalDirection == 'w')
+        {
+            if (Movement.isFieldOccupied(move(myPosition.getY(), myPosition.getX()), map))
+            {
+                if (enemyPos.getY() > myPosition.getY())
+                {
+                    optimalDirection = 's';
+                }
+                else
+                {
+                    optimalDirection = 'n';
+                }
+            }
+        }
+
         return this;
     }
 
@@ -156,15 +170,15 @@ public class Pawn implements Piece
     @Override
     public Piece setOptimalMovementSimple(Position blackPos, Position myPosition, List<Row> map)
     {
-            if (blackPos.getY() > myPosition.getY())
-            {
-                optimalDirection = 's';
-            }
-            else
-            {
-                optimalDirection = 'n';
-            }
-       
+        if (blackPos.getY() > myPosition.getY())
+        {
+            optimalDirection = 's';
+        }
+        else
+        {
+            optimalDirection = 'n';
+        }
+
         return this;
     }
 
