@@ -17,7 +17,7 @@
 <h:body>
 
 	<h:panelGroup layout="block"
-		style="display:flex;justify-content:center;align-items:center;width:100%;">
+		style="display:flex;justify-content:center;align-items:center;width:100%;margin-top:">
 
 
 		<h:panelGroup layout="block" id="board">
@@ -36,7 +36,7 @@
 						<td>G</td>
 						<td>H</td>
 					</tr>
-					<ui:repeat value="#{challengeThree.rows}" var="row">
+					<ui:repeat value="#{home.rows}" var="row">
 						<tr>
 							<td>
 								<h:outputLabel value="#{row.index}" style="margin-right: 10px;" />
@@ -67,23 +67,15 @@
 	</h:panelGroup>
 	<h:panelGroup layout="block" style="width: 100%; text-align:center;">
 		<h:form>
-		<p:growl id="growl" showDetail="true" sticky="true" />  
-			<h:panelGrid columns="2" style="margin: 0px auto;">
-				<h:outputLabel value="Anzahl Bauern" />
-				<h:inputText value="#{challengeThree.amountOfPawns}" />
-				<h:outputLabel value="Anzahl Bauern bewegen sich gleichzeitig." />
-				<h:inputText value="#{challengeThree.amountOfRounds}" />
-				<h:commandButton value="Apply" action="#{challengeThree.apply()}" />
-				<h:commandButton value="Next" action="#{challengeThree.nextMove()}" />
-				<h:commandButton value="Restart"
-					action="#{challengeThree.restart()}" />
-				<h:commandButton value="Autoplay"
-					action="#{challengeThree.autoplayToggle()}" />
-			</h:panelGrid>
-			<p:poll interval="1" listener="#{challengeThree.nextMove()}"
-				update="board" rendered="#{challengeThree.autoplay}" />
+			<p:growl id="growl" showDetail="true" sticky="true" />
+			<h:commandButton value="Next" action="#{home.nextMove()}" />
+			<h:commandButton value="Restart" action="#{home.restart()}" />
+			<h:commandButton value="Autoplay" action="#{home.autoplayToggle()}" />
+			<p:poll interval="1" listener="#{home.nextMove()}" update="board"
+				rendered="#{home.autoplay}" />
 		</h:form>
 	</h:panelGroup>
+
 
 </h:body>
 

@@ -68,6 +68,7 @@
 			<artifactId>jsf-api</artifactId>
 			<version>2.2.15</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-impl</artifactId>
@@ -77,8 +78,9 @@
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet</artifactId>
 			<version>2.2.14.Final</version>
-		</dependency>
-	</dependencies>
+		</dependency> 
+	</dependencies>  
+
 
 	<build>
 		<plugins>

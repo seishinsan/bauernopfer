@@ -16,66 +16,12 @@
 
 <h:body>
 
-	<h:panelGroup layout="block"
-		style="display:flex;justify-content:center;align-items:center;width:100%;margin-top:">
+<h:form>
 
-
-		<h:panelGroup layout="block" id="board">
-
-			<h:panelGroup layout="block">
-				<table style="margin: 0px auto;" cellpadding="0" border="0"
-					align="center" cellspacing="0">
-					<tr style="text-align: center;">
-						<td></td>
-						<td>A</td>
-						<td>B</td>
-						<td>C</td>
-						<td>D</td>
-						<td>E</td>
-						<td>F</td>
-						<td>G</td>
-						<td>H</td>
-					</tr>
-					<ui:repeat value="#{home.rows}" var="row">
-						<tr>
-							<td>
-								<h:outputLabel value="#{row.index}" style="margin-right: 10px;" />
-							</td>
-							<ui:repeat value="#{row.squares}" var="square">
-								<td>
-									<h:graphicImage value="/resources/img/black.jpg"
-										style="width: 64px; height: 64px; display:block;"
-										rendered="#{!square.isWhite() and empty square.piece}" />
-									<h:graphicImage value="/resources/img/white.jpg"
-										style="width: 64px; height: 64px; display:block;"
-										rendered="#{square.isWhite() and empty square.piece}" />
-									<h:graphicImage value="#{square.piece.image_black}"
-										style="width: 64px; height: 64px; display:block;"
-										rendered="#{!square.isWhite() and not empty square.piece}" />
-									<h:graphicImage value="#{square.piece.image_white}"
-										style="width: 64px; height: 64px; display:block;"
-										rendered="#{square.isWhite() and not empty square.piece}" />
-								</td>
-							</ui:repeat>
-						</tr>
-					</ui:repeat>
-				</table>
-			</h:panelGroup>
-
-		</h:panelGroup>
-
-	</h:panelGroup>
-	<h:panelGroup layout="block" style="width: 100%; text-align:center;">
-		<h:form>
-			<p:growl id="growl" showDetail="true" sticky="true" />
-			<h:commandButton value="Next" action="#{home.nextMove()}" />
-			<h:commandButton value="Restart" action="#{home.restart()}" />
-			<h:commandButton value="Autoplay" action="#{home.autoplayToggle()}" />
-			<p:poll interval="1" listener="#{home.nextMove()}" update="board"
-				rendered="#{home.autoplay}" />
-		</h:form>
-	</h:panelGroup>
-
+	<h:commandButton value="Aufgabe 1" action="challenge1.xhtml"></h:commandButton>
+	<h:commandButton value="Aufgabe 2" action="challenge2.xhtml"></h:commandButton>
+	<h:commandButton value="Aufgabe 3" action="challenge3.xhtml"></h:commandButton>
+</h:form>
 
 </h:body>
 

@@ -55,12 +55,13 @@ public class ChallengeThreeManagedBean
     
     private int amountOfRounds;
     
-    private int playedRounds;
+    private List<Integer> movedPawns;
 
     @PostConstruct
     public void init()
     {
-        playedRounds = 0;
+        movedPawns = new ArrayList<>();
+        
         if (amountOfPawns == 0)
         {
             amountOfPawns = 8;
@@ -68,7 +69,7 @@ public class ChallengeThreeManagedBean
         
         if (amountOfRounds == 0)
         {
-            amountOfRounds = 9999;
+            amountOfRounds = 1;
         }
         setAutoplay(false);
         currentPlayer = COLOR.WHITE;
@@ -282,27 +283,44 @@ public class ChallengeThreeManagedBean
         return empty;
     }
 
-    public static Position getWhiteFigure(List<Square> occupiedFields)
+    public Position getWhiteFigure(List<Square> occupiedFields)
     {
         Position nearestPosition = null;
         int distance = -999;
         for (Square square : occupiedFields)
         {
-            if (square.getPiece().getColor() == COLOR.WHITE)
-            {
-                int tempDistance = 0 - (BoardUtil.getBlackFigure(occupiedFields).getX() - square.getIndex());
-                if (tempDistance > distance || tempDistance == 0)
+
+                if(square.getPiece().getColor() != COLOR.BLACK)
                 {
-                    distance = tempDistance;
-                    nearestPosition = new Position(square.getIndex(), square.getRow());
-                    if (tempDistance == 0)
+                    
+                
+               Pawn p = (Pawn) square.getPiece();
+               for(Integer f : lastMovedWhite)
+               {
+                   if(f == p.getIndex())
+                   {
+                       return null;
+                   }
+               }
+
+                    if (square.getPiece().getColor() == COLOR.WHITE )
                     {
-                        return nearestPosition;
+                        int tempDistance = 0 - (BoardUtil.getBlackFigure(occupiedFields).getX() - square.getIndex());
+                        if (tempDistance > distance || tempDistance == 0)
+                        {
+                            distance = tempDistance;
+                            nearestPosition = new Position(square.getIndex(), square.getRow());
+                            if (tempDistance == 0)
+                            {
+                                return nearestPosition;
+                            }
+                        }
                     }
-                }
-            }
+                
         }
         return nearestPosition;
+        }
+        return null;
     }
 
     /**
@@ -343,12 +361,16 @@ public class ChallengeThreeManagedBean
         else
         {
             FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("White", "White player is thinking."));
-            Position oldPosition = getWhiteFigure(occupiedFields);
+            int i = 0;
+            while(i < amountOfRounds)
+            {
+                
+            Position oldPosition = BoardUtil.getWhiteFigure(occupiedFields, lastMovedWhite);
             if (oldPosition != null)
             {
                 Piece piece = getPiece(oldPosition.getY(), oldPosition.getX());
                 Position newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece()
-                        .setOptimalMovement(BoardUtil.getBlackFigure(occupiedFields), oldPosition, rows).move(oldPosition.getY(), oldPosition.getX());
+                        .setOptimalMovementSimple(BoardUtil.getBlackFigure(occupiedFields), oldPosition, rows).move(oldPosition.getY(), oldPosition.getX());
                 while (Movement.isFieldOccupiedByWhite(newPosition, rows) && Movement.cannotCapture(newPosition, rows))
                 {
                     newPosition = getSquare(oldPosition.getY(), oldPosition.getX()).getPiece().move(oldPosition.getY(), oldPosition.getX());
@@ -366,10 +388,11 @@ public class ChallengeThreeManagedBean
                 Pawn p = (Pawn) piece;
                 lastMovedWhite.add(p.getIndex());
             }
+            i++;
+        }
         }
 
-        playedRounds++;
-        if (BoardUtil.isGameOver(occupiedFields) || playedRounds == amountOfRounds)
+        if (BoardUtil.isGameOver(occupiedFields))
         {
             autoplay = false;
             FacesContext.getCurrentInstance().addMessage(null,  new FacesMessage("Game end", "Game came to an End."));
@@ -427,15 +450,6 @@ public class ChallengeThreeManagedBean
         this.amountOfPawns = amountOfPawns;
     }
 
-    public int getPlayedRounds()
-    {
-        return playedRounds;
-    }
-
-    public void setPlayedRounds(int playedRounds)
-    {
-        this.playedRounds = playedRounds;
-    }
 
     public int getAmountOfRounds()
     {
@@ -445,6 +459,16 @@ public class ChallengeThreeManagedBean
     public void setAmountOfRounds(int amountOfRounds)
     {
         this.amountOfRounds = amountOfRounds;
+    }
+
+    public List<Integer> getMovedPawns()
+    {
+        return movedPawns;
+    }
+
+    public void setMovedPawns(List<Integer> movedPawns)
+    {
+        this.movedPawns = movedPawns;
     }
     
 }
